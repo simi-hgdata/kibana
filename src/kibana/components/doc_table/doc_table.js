@@ -132,15 +132,13 @@ define(function (require) {
 
           function formatField(value, name) {
             //var defaultFormat = courier.indexPatterns.fieldFormats.defaultByType.string;
-            //var defaultFormat = courier.indexPatterns.fieldFormats.getDefaultType();
             //var field = $scope.indexPattern.fields.byName[name];
             //var formatter = (field && field.format) ? field.format : defaultFormat;
 
             //return formatter.convert(value, 'text');
-            if (name == '@timestamp') {
-              return new Date(+value);
-            } else {
-              return value;
+
+            if (formatted && column == "@timestamp") {
+              val = new Date(+val).toString();
             }
           }
 
@@ -162,10 +160,6 @@ define(function (require) {
               }
 
               val = (val == null) ? '' : val;
-
-              if (formatted && column == "@timestamp") {
-                val = new Date(+val).toString();
-              }
 
               return val;
             });
