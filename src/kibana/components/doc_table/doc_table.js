@@ -111,38 +111,69 @@ define(function (require) {
         }));
 
         $scope.exportAsCsv = function (formatted) {
-          var csv = new Blob([$scope.toCsv(formatted)], { type: 'text/plain' });
-          saveAs(csv, 'export.csv');
-        };
+          var csv = {
+            separator: config.get('csv:separator'),
+            quoteValues: config.get('csv:quoteValues')
+          };
 
-        $scope.toCsv = function (formatted) {
-          var rows = $scope.table.rows;
-          var columns = formatted ? $scope.formattedColumns : $scope.table.columns;
+          var rows = $scope.hits;
+          var columns = $scope.columns;
           var nonAlphaNumRE = /[^a-zA-Z0-9]/;
           var allDoubleQuoteRE = /"/g;
 
           function escape(val) {
-            if (!formatted && _.isObject(val)) val = val.valueOf();
+            if (_.isObject(val)) val = val.valueOf();
             val = String(val);
-            if (self.csv.quoteValues && nonAlphaNumRE.test(val)) {
+            if (csv.quoteValues && nonAlphaNumRE.test(val)) {
               val = '"' + val.replace(allDoubleQuoteRE, '""') + '"';
             }
             return val;
           }
 
+          function formatField(value, name) {
+            var defaultFormat = courier.indexPatterns.fieldFormats.defaultByType.string;
+            var field = $scope.indexPattern.fields.byName[name];
+            var formatter = (field && field.format) ? field.format : defaultFormat;
+
+            return formatter.convert(value);
+          }
+
+          function formatRow(row) {
+            $scope.indexPattern.flattenHit(row);
+            row.$$_formatted = row.$$_formatted || _.mapValues(row.$$_flattened, formatField);
+            return row.$$_formatted;
+          }
+
+          // get column values for each row
+          var csvRows = rows.map(function (row, i) {
+            return columns.map(function (column, j) {
+              var val;
+
+              if (formatted) {
+                val = (row.$$_formatted || formatRow(row))[column];
+              } else {
+                val = (row.$$_flattened || formatRow(row))[column];
+              }
+
+              val = (val == null) ? '' : val;
+
+              return val;
+            });
+          });
+
           // escape each cell in each row
-          var csvRows = rows.map(function (row) {
+          csvRows = csvRows.map(function (row, i) {
             return row.map(escape);
           });
 
           // add the columns to the rows
-          csvRows.unshift(columns.map(function (col) {
-            return escape(col.title);
-          }));
+          csvRows.unshift(columns.map(escape));
 
-          return csvRows.map(function (row) {
-            return row.join(self.csv.separator) + '\r\n';
+          var data = csvRows.map(function (row) {
+            return row.join(csv.separator) + '\r\n';
           }).join('');
+
+          saveAs(new Blob([data], { type: 'text/plain' }), 'export.csv');
         };
       }
     };
