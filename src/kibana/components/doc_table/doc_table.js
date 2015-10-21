@@ -139,7 +139,7 @@ define(function (require) {
             //return formatter.convert(value, 'text');
 
             if (name == "@timestamp") {
-              return new Date(+value).toString();
+              return new Date(+value).toISOString();
             } else {
               return value;
             }
