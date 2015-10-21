@@ -163,6 +163,10 @@ define(function (require) {
 
               val = (val == null) ? '' : val;
 
+              if (formatted && column == "@timestamp") {
+                val = new Date(+val).toString();
+              }
+
               return val;
             });
           });
