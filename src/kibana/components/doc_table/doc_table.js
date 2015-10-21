@@ -120,6 +120,7 @@ define(function (require) {
           var columns = $scope.columns;
           var nonAlphaNumRE = /[^a-zA-Z0-9]/;
           var allDoubleQuoteRE = /"/g;
+          var filename = formatted ? 'formatted.csv' : 'raw.csv';
 
           function escape(val) {
             if (_.isObject(val)) val = val.valueOf();
@@ -137,8 +138,10 @@ define(function (require) {
 
             //return formatter.convert(value, 'text');
 
-            if (formatted && column == "@timestamp") {
-              val = new Date(+val).toString();
+            if (name == "@timestamp") {
+              return new Date(+value).toString();
+            } else {
+              return value;
             }
           }
 
@@ -177,7 +180,8 @@ define(function (require) {
             return row.join(csv.separator) + '\r\n';
           }).join('');
 
-          saveAs(new Blob([data], { type: 'text/plain' }), 'export.csv');
+
+          saveAs(new Blob([data], { type: 'text/plain' }), filename);
         };
       }
     };
