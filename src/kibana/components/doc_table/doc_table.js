@@ -131,7 +131,8 @@ define(function (require) {
           }
 
           function formatField(value, name) {
-            var defaultFormat = courier.indexPatterns.fieldFormats.defaultByType.string;
+            //var defaultFormat = courier.indexPatterns.fieldFormats.defaultByType.string;
+            var defaultFormat = courier.indexPatterns.fieldFormats.getDefaultType();
             var field = $scope.indexPattern.fields.byName[name];
             var formatter = (field && field.format) ? field.format : defaultFormat;
 
