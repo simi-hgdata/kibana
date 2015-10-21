@@ -136,7 +136,7 @@ define(function (require) {
             var field = $scope.indexPattern.fields.byName[name];
             var formatter = (field && field.format) ? field.format : defaultFormat;
 
-            return formatter.convert(value, defaultFormat);
+            return formatter.convert(value, 'text');
           }
 
           function formatRow(row) {
