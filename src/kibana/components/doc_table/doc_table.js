@@ -138,7 +138,7 @@ define(function (require) {
 
             //return formatter.convert(value, 'text');
 
-            if (name == "@timestamp") {
+            if (name == "@timestamp" || name == "startDate" || name == "endDate") {
               return new Date(+value).toISOString();
             } else {
               return value;
