@@ -12,7 +12,7 @@ define(function (require) {
           'ngModel': '='
         },
         link: function ($scope, elem, attr, ngModel) {
-          var illegalCharacters = ['\\', '/', '?', '"', '<', '>', '|', ' ', ','];
+          var illegalCharacters = ['\\', '/', '?', '"', '<', '>', '|', ' '];
           var isValid = function (input) {
             if (input == null || input === '' || input === '.' || input === '..') return false;
 
